@@ -10,16 +10,16 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
-COPY ["GED/GED.csproj", "GED/"]
-RUN dotnet restore "GED/GED.csproj"
+COPY ["Ged.Api/Ged.Api.csproj", "Ged.Api/"]
+RUN dotnet restore "Ged.Api/Ged.Api.csproj"
 COPY . .
-WORKDIR "/src/GED"
-RUN dotnet build "GED.csproj" -c Release -o /app/build
+WORKDIR "/src/Ged.Api"
+RUN dotnet build "Ged.Api.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "GED.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "Ged.Api.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "GED.dll"]
+ENTRYPOINT ["dotnet", "Ged.Api.dll"]

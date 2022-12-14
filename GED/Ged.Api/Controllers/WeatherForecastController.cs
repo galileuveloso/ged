@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace GED.Controllers
+namespace Ged.Api.Controllers
 {
     [ApiController]
     [Route("[controller]")]

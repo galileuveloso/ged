@@ -1,4 +1,4 @@
-namespace GED
+namespace Ged.Api
 {
     public class WeatherForecast
     {
