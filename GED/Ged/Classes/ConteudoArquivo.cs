@@ -10,6 +10,5 @@ namespace Ged.Classes
         public string? Nome { get; set; }
         public string? Tipo { get; set; }
         public long Tamanho { get; set; }
-        public string? Texto { get; set; }
     }
 }
