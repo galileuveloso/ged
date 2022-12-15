@@ -1,7 +1,7 @@
 ﻿using Npgsql;
 using System.Data;
 
-namespace Ged.Interfaces
+namespace Ged.Interfaces.Factory
 {
     public interface IDatabaseFactory
     {

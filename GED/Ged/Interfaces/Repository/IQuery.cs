@@ -1,4 +1,4 @@
-﻿namespace Ged.Interfaces
+﻿namespace Ged.Interfaces.Repository
 {
     public interface IQuery
     {

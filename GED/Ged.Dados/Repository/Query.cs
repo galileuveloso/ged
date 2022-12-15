@@ -1,4 +1,4 @@
-﻿using Ged.Interfaces;
+﻿using Ged.Interfaces.Repository;
 
 namespace Ged.Dados.Repository
 {

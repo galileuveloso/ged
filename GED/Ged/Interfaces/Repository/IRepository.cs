@@ -1,7 +1,7 @@
 ﻿using Ged.Classes;
 using System.Threading.Tasks;
 
-namespace Ged.Interfaces
+namespace Ged.Interfaces.Repository
 {
     public interface IRepository<T> where T : Entity
     {

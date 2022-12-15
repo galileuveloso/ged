@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Ged.Classes;
-using Ged.Interfaces;
+using Ged.Interfaces.Factory;
+using Ged.Interfaces.Repository;
 using Npgsql;
 using System.Data;
 using System.Reflection;

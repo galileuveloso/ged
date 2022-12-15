@@ -1,4 +1,4 @@
-﻿using Ged.Interfaces;
+﻿using Ged.Interfaces.Factory;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 using System.Data;
