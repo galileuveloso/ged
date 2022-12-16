@@ -1,20 +1,20 @@
 ﻿using Ged.Classes;
-using System.Threading.Tasks;
+using System.Linq.Expressions;
 
 namespace Ged.Interfaces.Repository
 {
     public interface IRepository<T> where T : Entity
     {
-        Task<IEnumerable<T>> QueryAsync();
-        Task<IEnumerable<T>> QueryAsync(object param);
-        Task<IEnumerable<T>> QueryAsync(object param, string orderBy);
-        Task<IEnumerable<T>> QueryAsync(string sql);
-        Task<IEnumerable<T>> QueryAsync(string sql, object param);
-        Task<T> QueryFirstAsync(object param);
-        Task<T> QueryFirstAsync(string sql, object param);
-        Task<T> AddAsync(T obj);
-        Task<int> UpdateAsync(T obj);
-        bool ParameterHasValue(object parametro, string nome);
-        void Dispose();
+        Task<IEnumerable<T>> GetAsync(params Expression<Func<T, object>>[] joins);
+        Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>> lambda, params Expression<Func<T, object>>[] joins);
+        Task<T> GetFirstAsync(Expression<Func<T, bool>> lambda, params Expression<Func<T, object>>[] joins);
+        Task<bool> ExistsAsync(Expression<Func<T, bool>> lambda);
+        Task AddAsync(T entity);
+        Task AddCollectionAsync(IEnumerable<T> entities);
+        Task UpdateAsync(T entity);
+        Task UpdateCollectionAsync(IEnumerable<T> entities);
+        Task RemoveAsync(T entity);
+        Task SaveChangesAsync();
+        void SetInsertData(Entity entity);
     }
 }

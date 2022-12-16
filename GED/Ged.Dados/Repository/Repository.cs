@@ -1,66 +1,120 @@
-﻿using Dapper;
-using Ged.Classes;
-using Ged.Interfaces.Factory;
+﻿using Ged.Classes;
 using Ged.Interfaces.Repository;
-using Npgsql;
+using Microsoft.EntityFrameworkCore;
 using System.Data;
-using System.Reflection;
+using System.Linq.Expressions;
 
 namespace Ged.Dados.Repository
 {
-    public class Repository<T> : IRepository<T>, IDisposable where T : Entity
+    public class Repository<T> : IRepository<T> where T : Entity
     {
-        protected readonly NpgsqlConnection _dbConnection;
-        protected NpgsqlTransaction? _dbTransaction;
-        protected readonly IDatabaseFactory _databaseFactory;
-        protected readonly IQuery _query;
+        protected readonly IDbContext _context;
 
-        public Repository(IDatabaseFactory databaseFactory)
+        public Repository(DbContext context)
         {
-            _databaseFactory = databaseFactory;
-            _dbConnection = databaseFactory.GetDbConnection();
-            _query = new Query<T>();
+            _context = context;
         }
 
-        public void StartTransaction() => _dbTransaction = _databaseFactory.GetDbTransaction();
-
-        public async Task<IEnumerable<T>> QueryAsync() => await _dbConnection.QueryAsync<T>(_query.SelectQuery(), transaction: _dbTransaction);
-
-        public async Task<IEnumerable<T>> QueryAsync(object param) => await _dbConnection.QueryAsync<T>(_query.SelectQuery(param), param, transaction: _dbTransaction);
-
-        public async Task<IEnumerable<T>> QueryAsync(object param, string orderBy) => await _dbConnection.QueryAsync<T>(_query.SelectQuery(param, orderBy), param, transaction: _dbTransaction);
-
-        public async Task<IEnumerable<T>> QueryAsync(string sql) => await _dbConnection.QueryAsync<T>(sql, transaction: _dbTransaction);
-
-        public async Task<IEnumerable<T>> QueryAsync(string sql, object param) => await _dbConnection.QueryAsync<T>(sql, param, transaction: _dbTransaction);
-
-        public async Task<IEnumerable<T>> ProcedureAsync(string procedure, object param) => await _dbConnection.QueryAsync<T>(procedure, param, commandType: CommandType.StoredProcedure, transaction: _dbTransaction);
-
-        public async Task<T> QueryFirstAsync(object param) => await _dbConnection.QueryFirstAsync<T>(_query.SelectQuery(param), param, transaction: _dbTransaction);
-
-        public async Task<T> QueryFirstAsync(string sql, object param) => await _dbConnection.QueryFirstAsync<T>(sql, param, transaction: _dbTransaction);
-
-        public virtual async Task<T> AddAsync(T obj)
+        protected IQueryable<T> Query(params Expression<Func<T, object>>[] joins)
         {
-            obj.Id = await _dbConnection.ExecuteAsync(_query.InsertQueryReturnInserted(), obj, transaction: _dbTransaction);
-            return obj;
+            var query = _context
+                .Set<T>()
+                .AsQueryable();
+            return joins == null ? query : joins.Aggregate(query, (current, include) => current.Include(include));
         }
 
-        public virtual async Task<int> UpdateAsync(T obj) => await _dbConnection.ExecuteAsync(_query.UpdateByIdQuery(), obj, transaction: _dbTransaction);
-
-        public bool ParameterHasValue(object parametro, string nome)
+        public virtual async Task<IEnumerable<T>> GetAsync(params Expression<Func<T, object>>[] joins)
         {
-            PropertyInfo? propriedade = parametro.GetType().GetProperty(nome);
-            object? valor = propriedade?.GetValue(parametro);
-            return !(valor == null || string.IsNullOrEmpty(valor.ToString()));
+            return await Query(joins).ToListAsync();
         }
 
-        public object? ParameterValue(object parametro, string nome)
+        public virtual async Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>> lambda, params Expression<Func<T, object>>[] joins)
         {
-            PropertyInfo? propriedade = parametro.GetType().GetProperty(nome);
-            return propriedade?.GetValue(obj: parametro);
+            return await Query(joins)
+                .Where(lambda)
+                .ToListAsync();
         }
 
-        public void Dispose() => _databaseFactory.Dispose();
+        public virtual async Task<T> GetFirstAsync(Expression<Func<T, bool>> lambda, params Expression<Func<T, object>>[] joins) => await Query(joins).FirstOrDefaultAsync(lambda);
+
+        public virtual async Task<bool> ExistsAsync(Expression<Func<T, bool>> lambda)
+        {
+            return await Query().AnyAsync(lambda);
+        }
+
+        public virtual async Task AddAsync(T entity)
+        {
+            await _context
+                .Set<T>()
+                .AddAsync(SetAddData(entity))
+                .ConfigureAwait(false);
+        }
+
+        public virtual async Task AddCollectionAsync(IEnumerable<T> entities)
+        {
+            await _context
+                .Set<T>()
+                .AddRangeAsync(SetAddData(entities))
+                .ConfigureAwait(false);
+        }
+
+        public virtual Task UpdateAsync(T entity)
+        {
+            _context
+                .Set<T>()
+                .Update(SetUpdateData(entity));
+            return Task.CompletedTask;
+        }
+
+        public virtual Task UpdateCollectionAsync(IEnumerable<T> entities)
+        {
+            _context
+                .Set<T>()
+                .UpdateRange(SetUpdateData(entities));
+            return Task.CompletedTask;
+        }
+
+        public virtual Task RemoveAsync(T entity)
+        {
+            _context
+                .Set<T>()
+                .Remove(entity);
+            return Task.CompletedTask;
+        }
+
+        public void SetInsertData(Entity entity)
+        {
+            entity.DataAtualizacao = null;
+            entity.DataCadastro = DateTime.Now;
+        }
+
+        private T SetAddData(T entity)
+        {
+            SetInsertData(entity);
+            return entity;
+        }
+
+        private T SetUpdateData(T entity)
+        {
+            entity.DataAtualizacao = DateTime.Now;
+            return entity;
+        }
+
+        private IEnumerable<T> SetAddData(IEnumerable<T> entities)
+        {
+            return entities.Select(entity => { return SetAddData(entity); });
+        }
+
+        private IEnumerable<T> SetUpdateData(IEnumerable<T> entities)
+        {
+            return entities.Select(entity => { return SetUpdateData(entity); });
+        }
+
+        public virtual async Task SaveChangesAsync()
+        {
+            await _context
+                .SaveChangesAsync()
+                .ConfigureAwait(false);
+        }
     }
 }

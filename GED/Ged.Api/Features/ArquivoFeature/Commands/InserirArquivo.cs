@@ -1,7 +1,7 @@
 ﻿using Ged.Api.Extensions;
 using Ged.Api.Helpers;
 using Ged.Classes;
-using Ged.Interfaces;
+using Ged.Interfaces.Repository;
 using MediatR;
 
 namespace Ged.Api.Features.ArquivoFeature.Commands
