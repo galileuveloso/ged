@@ -26,9 +26,9 @@ namespace Ged.Api.Extensions
                 VersaoAtual = 1
             };
 
-            arquivo.VersoesArquivo.Single().ConteudoArquivo?.SetHash();
+            arquivo.VersoesArquivo.Single().ConteudoArquivo.SetHash();
 
-            return arquivo!;
+            return arquivo;
         }
     }
 }

@@ -21,7 +21,7 @@ namespace Ged.Api.Helpers
 
         public static string InactiveFor<T>(T o, Expression<Func<T, object>> property) => $"{typeof(T).Name}.{GetName(property)}: '{GetValue(o, property)}' está inátivo.";
 
-        private static string? GetName<T>(Expression<Func<T, object>> property) => GetMemberExpression(property)?.Member.Name;
+        private static string GetName<T>(Expression<Func<T, object>> property) => GetMemberExpression(property)?.Member.Name;
 
         private static string? GetValue<T>(T o, Expression<Func<T, object>> property)
         {
