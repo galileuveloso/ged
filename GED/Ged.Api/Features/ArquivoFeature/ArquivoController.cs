@@ -1,4 +1,5 @@
 ﻿using Ged.Api.Features.ArquivoFeature.Commands;
+using Ged.Api.Features.ArquivoFeature.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Data.Entity.Core;
@@ -40,10 +41,64 @@ namespace Ged.Api.Features.ArquivoFeature
             {
                 return BadRequest(ex.Message);
             }
-            catch(ObjectNotFoundException ex)
+            catch (ObjectNotFoundException ex)
             {
                 return NotFound(ex.Message);
             }
         }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> Delete(long id)
+        {
+            try
+            {
+                return Ok(await _mediator.Send(new RemoverArquivoCommand(id)));
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (ObjectNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult> Get(long id)
+        {
+            try
+            {
+                return Ok(await _mediator.Send(new ObterArquivoByIdQuery { IdArquivo = id }));
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (ObjectNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+
+        }
+
+        [HttpGet("{idsArquivos}")]
+        public async Task<ActionResult> Get(IEnumerable<long> ids)
+        {
+            try
+            {
+                return Ok(await _mediator.Send(new SelecionarArquivosByIdQuery { Ids = ids }));
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (ObjectNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+
+        }
+
     }
 }

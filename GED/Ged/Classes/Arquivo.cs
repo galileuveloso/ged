@@ -7,6 +7,7 @@ namespace Ged.Classes
     {
         public int NumeroVersaoAtual { get; set; }
         public IEnumerable<VersaoArquivo> VersoesArquivo { get; set; }
+        public bool Ativo { get; set; }
         [NotMapped]
         public VersaoArquivo? VersaoAtual => VersoesArquivo.FirstOrDefault(x => x.NumeroVersao == NumeroVersaoAtual);
     }

@@ -3,7 +3,6 @@ using Ged.Api.Helpers;
 using Ged.Classes;
 using Ged.Interfaces.Repository;
 using MediatR;
-using System.Data.Entity.Core;
 
 namespace Ged.Api.Features.ArquivoFeature.Commands
 {
@@ -48,25 +47,17 @@ namespace Ged.Api.Features.ArquivoFeature.Commands
 
             request.Validate();
 
-            Arquivo arquivo = await GetArquivo(request.Id);
+            Arquivo arquivo = await _repository.GetArquivo(request.Id);
             arquivo.NumeroVersaoAtual++;
 
             VersaoArquivo novaVersao = request.GetNovaVersao(arquivo);
 
             await _repository.UpdateAsync(arquivo);
             await _versaoRepository.AddAsync(novaVersao);
+            await _repository.SaveChangesAsync();
+            await _versaoRepository.SaveChangesAsync();
 
             return arquivo.ToResponseAtualizar();
-        }
-
-        private async Task<Arquivo> GetArquivo(long id)
-        {
-            Arquivo arquivo = await _repository.GetFirstAsync(x => x.Id == id);
-
-            if (arquivo == null)
-                throw new ObjectNotFoundException("Arquivo não encontrado.");
-
-            return arquivo;
         }
     }
 }

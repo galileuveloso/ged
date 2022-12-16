@@ -1,5 +1,7 @@
 ﻿using Ged.Api.Features.ArquivoFeature.Commands;
+using Ged.Api.Features.ArquivoFeature.Queries;
 using Ged.Classes;
+using Ged.Models;
 
 namespace Ged.Api.Extensions
 {
@@ -26,7 +28,8 @@ namespace Ged.Api.Extensions
                     }
                 },
                 NumeroVersaoAtual = 1,
-                DataCadastro = DateTime.Now
+                DataCadastro = DateTime.Now,
+                Ativo = true
             };
 
             arquivo.VersoesArquivo.Single().ConteudoArquivo.SetHash();
@@ -73,6 +76,50 @@ namespace Ged.Api.Extensions
                 Id = arquivo.Id,
                 DataAtualizacao = arquivo.DataAtualizacao!.Value,
                 NumeroVersao = arquivo.NumeroVersaoAtual
+            };
+        }
+
+        public static RemoverArquivoResponse ToResponseRemover(this Arquivo arquivo)
+        {
+            return new RemoverArquivoResponse
+            {
+                Id = arquivo.Id,
+                DataAtualizacao = arquivo.DataAtualizacao!.Value
+            };
+        }
+
+        public static SelecionarArquivosByIdResponse ToResponseSelecionarArquivos(this IEnumerable<Arquivo> arquivos)
+        {
+            IList<ArquivoResponse> arquivosResponse = new List<ArquivoResponse>();
+
+            foreach (Arquivo arquivo in arquivos)
+            {
+                ArquivoResponse arq = new(arquivo.Id);
+                foreach (VersaoArquivo versao in arquivo.VersoesArquivo)
+                {
+                    arq.Versoes.Add(new(versao));
+                }
+                arquivosResponse.Add(arq);
+            }
+
+            return new()
+            {
+                Arquivos = arquivosResponse
+            };
+        }
+
+        public static ObterArquivoByIdResponse ToResponseObterArquivo(this Arquivo arquivo)
+        {
+            ArquivoResponse arquivosResponse = new(arquivo.Id);
+
+            foreach (VersaoArquivo versao in arquivo.VersoesArquivo)
+            {
+                arquivosResponse.Versoes.Add(new(versao));
+            }
+
+            return new()
+            {
+                Arquivo = arquivosResponse
             };
         }
     }

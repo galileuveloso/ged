@@ -46,6 +46,7 @@ namespace Ged.Api.Features.ArquivoFeature.Commands
             Arquivo arquivo = request.GetDominio();
 
             await _arquivoRepository.AddAsync(arquivo);
+            await _arquivoRepository.SaveChangesAsync();
 
             return arquivo.ToResponseInserir();
         }
