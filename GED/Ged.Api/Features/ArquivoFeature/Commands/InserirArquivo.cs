@@ -11,6 +11,13 @@ namespace Ged.Api.Features.ArquivoFeature.Commands
         public byte[] ConteudoArquivo { get; set; }
         public string NomeArquivo { get; set; }
         public string TipoArquivo { get; set; }
+
+        public void Validate()
+        {
+            if (ConteudoArquivo == null) throw new ArgumentNullException("Conteudo do Arquivo Nulo.");
+            if (String.IsNullOrEmpty(NomeArquivo)) throw new ArgumentNullException("Nome do Arquivo Nulo ou Vazio.");
+            if (String.IsNullOrEmpty(TipoArquivo)) throw new ArgumentNullException("Tipo do Arquivo Nulo ou Vazio.");
+        }
     }
 
     public class InserirArquivoResponse
@@ -23,6 +30,7 @@ namespace Ged.Api.Features.ArquivoFeature.Commands
     public class InserirArquivoHandler : IRequestHandler<InserirArquivoCommand, InserirArquivoResponse>
     {
         private readonly IArquivoRepository _arquivoRepository;
+
         public InserirArquivoHandler(IArquivoRepository arquivoRepository)
         {
             _arquivoRepository = arquivoRepository;
@@ -33,11 +41,13 @@ namespace Ged.Api.Features.ArquivoFeature.Commands
             if (request == null)
                 throw new ArgumentNullException(MessageHelper.NullFor<InserirArquivoCommand>());
 
+            request.Validate();
+
             Arquivo arquivo = request.GetDominio();
 
             await _arquivoRepository.AddAsync(arquivo);
 
-            throw new NotImplementedException();
+            return arquivo.ToResponseInserir();
         }
     }
 }

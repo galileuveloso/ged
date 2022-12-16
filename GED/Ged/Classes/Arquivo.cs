@@ -5,9 +5,9 @@ namespace Ged.Classes
 {
     public class Arquivo : Entity
     {
-        public int VersaoAtual { get; set; }
+        public int NumeroVersaoAtual { get; set; }
         public IEnumerable<VersaoArquivo> VersoesArquivo { get; set; }
         [NotMapped]
-        public VersaoArquivo? VersaoArquivoAtual => VersoesArquivo.FirstOrDefault(x => x.NumeroVersao == VersaoAtual);
+        public VersaoArquivo? VersaoAtual => VersoesArquivo.FirstOrDefault(x => x.NumeroVersao == NumeroVersaoAtual);
     }
 }

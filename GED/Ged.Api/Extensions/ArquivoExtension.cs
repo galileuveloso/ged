@@ -23,12 +23,22 @@ namespace Ged.Api.Extensions
                         NumeroVersao = 1
                     }
                 },
-                VersaoAtual = 1
+                NumeroVersaoAtual = 1
             };
 
             arquivo.VersoesArquivo.Single().ConteudoArquivo.SetHash();
 
             return arquivo;
+        }
+
+        public static InserirArquivoResponse ToResponseInserir(this Arquivo arquivo)
+        {
+            return new InserirArquivoResponse
+            {
+                Id = arquivo.Id,
+                DataCadastro = arquivo.DataCadastro,
+                NumeroVersao = arquivo.VersaoAtual!.NumeroVersao
+            };
         }
     }
 }
