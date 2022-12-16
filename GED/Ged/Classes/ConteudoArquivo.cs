@@ -6,7 +6,6 @@ namespace Ged.Classes
     {
         public byte[]? Conteudo { get; set; }
         public byte[]? Hash { get; set; }
-        public HashAlgoritmoEnum HashAlgoritmo { get; set; }
         public string? Nome { get; set; }
         public string? Tipo { get; set; }
         public long Tamanho { get; set; }

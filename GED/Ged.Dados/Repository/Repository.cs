@@ -42,8 +42,7 @@ namespace Ged.Dados.Repository
 
         public virtual async Task<T> AddAsync(T obj)
         {
-            obj.Id = await _dbConnection.QuerySingleAsync<long>(_query.SelectQuerySequence(), null, transaction: _dbTransaction);
-            await _dbConnection.ExecuteAsync(_query.InsertQueryReturnInserted(), obj, transaction: _dbTransaction);
+            obj.Id = await _dbConnection.ExecuteAsync(_query.InsertQueryReturnInserted(), obj, transaction: _dbTransaction);
             return obj;
         }
 

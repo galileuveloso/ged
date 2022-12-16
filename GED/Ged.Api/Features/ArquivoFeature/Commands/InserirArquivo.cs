@@ -1,32 +1,31 @@
-﻿using Ged.Api.Helpers;
+﻿using Ged.Api.Extensions;
+using Ged.Api.Helpers;
 using Ged.Classes;
 using Ged.Interfaces;
-using Ged.Interfaces.Repository;
 using MediatR;
 
 namespace Ged.Api.Features.ArquivoFeature.Commands
 {
     public class InserirArquivoCommand : IRequest<InserirArquivoResponse>
     {
-
+        public byte[] ConteudoArquivo { get; set; }
+        public string NomeArquivo { get; set; }
+        public string TipoArquivo { get; set; }
     }
 
     public class InserirArquivoResponse
     {
-
+        public long Id { get; set; }
+        public int NumeroVersao { get; set; }
+        public DateTime DataCadastro { get; set; }
     }
 
     public class InserirArquivoHandler : IRequestHandler<InserirArquivoCommand, InserirArquivoResponse>
     {
-        IRepository<Arquivo> _arquivoRepository;
-        IRepository<VersaoArquivo> _versaoRepository;
-        IRepository<ConteudoArquivo> _conteudoRepository;
-
-        public InserirArquivoHandler(IRepository<Arquivo> arquivoRepository, IRepository<VersaoArquivo> versaoRepository, IRepository<ConteudoArquivo> conteudoRepository)
+        private readonly IArquivoRepository _arquivoRepository;
+        public InserirArquivoHandler(IArquivoRepository arquivoRepository)
         {
             _arquivoRepository = arquivoRepository;
-            _versaoRepository = versaoRepository;
-            _conteudoRepository = conteudoRepository;
         }
 
         public async Task<InserirArquivoResponse> Handle(InserirArquivoCommand request, CancellationToken cancellationToken)
@@ -34,14 +33,9 @@ namespace Ged.Api.Features.ArquivoFeature.Commands
             if (request == null)
                 throw new ArgumentNullException(MessageHelper.NullFor<InserirArquivoCommand>());
 
-            Arquivo arquivo = new();
-            VersaoArquivo versao = new();
-            ConteudoArquivo conteudo = new();
+            Arquivo arquivo = request.GetDominio();
 
-            //insiro os tres
             await _arquivoRepository.AddAsync(arquivo);
-            await _versaoRepository.AddAsync(versao);
-            await _conteudoRepository.AddAsync(conteudo);
 
             throw new NotImplementedException();
         }

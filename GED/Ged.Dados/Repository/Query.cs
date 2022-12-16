@@ -1,4 +1,5 @@
 ﻿using Ged.Interfaces.Repository;
+using System.Reflection;
 
 namespace Ged.Dados.Repository
 {
@@ -11,7 +12,7 @@ namespace Ged.Dados.Repository
         private static string GetWhere(object param)
         {
             string where = "1 = 1";
-            foreach (var p in param.GetType().GetProperties())
+            foreach (PropertyInfo p in param.GetType().GetProperties())
                 where += $" AND {p.Name} = :{p.Name}";
             return where;
         }
@@ -22,7 +23,7 @@ namespace Ged.Dados.Repository
         {
             string insert = $"INSERT INTO {typeof(T).Name} (";
             string values = $"VALUES(";
-            foreach (var prop in typeof(T).GetProperties())
+            foreach (PropertyInfo prop in typeof(T).GetProperties())
             {
                 insert += $"{prop.Name},";
                 values += $":{prop.Name},";
@@ -33,7 +34,7 @@ namespace Ged.Dados.Repository
         public string UpdateByIdQuery()
         {
             string update = $"UPDATE {typeof(T).Name} SET ";
-            foreach (var prop in typeof(T).GetProperties())
+            foreach (PropertyInfo prop in typeof(T).GetProperties())
             {
                 update += $"{prop.Name} = :{prop.Name},";
             }
