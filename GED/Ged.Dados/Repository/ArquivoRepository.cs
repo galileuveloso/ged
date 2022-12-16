@@ -9,13 +9,5 @@ namespace Ged.Dados.Repository
         {
 
         }
-
-        public override async Task AddAsync(Arquivo arquivo)
-        {
-            SetInsertData(arquivo.VersaoAtual!);
-            SetInsertData(arquivo.VersaoAtual!);
-            SetInsertData(arquivo.VersaoAtual!.ConteudoArquivo);
-            await base.AddAsync(arquivo);
-        }
     }
 }

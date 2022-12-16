@@ -46,7 +46,7 @@ namespace Ged.Dados.Repository
         {
             await _context
                 .Set<T>()
-                .AddAsync(SetAddData(entity))
+                .AddAsync(entity)
                 .ConfigureAwait(false);
         }
 

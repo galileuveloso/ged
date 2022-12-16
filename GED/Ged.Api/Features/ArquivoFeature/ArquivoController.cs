@@ -1,6 +1,7 @@
 ﻿using Ged.Api.Features.ArquivoFeature.Commands;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using System.Data.Entity.Core;
 
 namespace Ged.Api.Features.ArquivoFeature
 {
@@ -25,6 +26,23 @@ namespace Ged.Api.Features.ArquivoFeature
             catch (ArgumentNullException ex)
             {
                 return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut]
+        public async Task<ActionResult> Put(AtualizarArquivoCommand request)
+        {
+            try
+            {
+                return Ok(await _mediator.Send(request));
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch(ObjectNotFoundException ex)
+            {
+                return NotFound(ex.Message);
             }
         }
     }

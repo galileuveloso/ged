@@ -18,12 +18,15 @@ namespace Ged.Api.Extensions
                             Nome = request.NomeArquivo,
                             Tipo = request.TipoArquivo,
                             Tamanho = request.ConteudoArquivo.Length,
-                            Conteudo = request.ConteudoArquivo
+                            Conteudo = request.ConteudoArquivo,
+                            DataCadastro = DateTime.Now
                         },
-                        NumeroVersao = 1
+                        NumeroVersao = 1,
+                        DataCadastro = DateTime.Now
                     }
                 },
-                NumeroVersaoAtual = 1
+                NumeroVersaoAtual = 1,
+                DataCadastro = DateTime.Now
             };
 
             arquivo.VersoesArquivo.Single().ConteudoArquivo.SetHash();
@@ -37,7 +40,39 @@ namespace Ged.Api.Extensions
             {
                 Id = arquivo.Id,
                 DataCadastro = arquivo.DataCadastro,
-                NumeroVersao = arquivo.VersaoAtual!.NumeroVersao
+                NumeroVersao = arquivo.NumeroVersaoAtual
+            };
+        }
+
+        public static VersaoArquivo GetNovaVersao(this AtualizarArquivoCommand request, Arquivo arquivo)
+        {
+            VersaoArquivo novaVersao = new()
+            {
+                IdArquivo = request.Id,
+                ConteudoArquivo = new ConteudoArquivo
+                {
+                    Nome = request.NomeArquivo,
+                    Tipo = request.TipoArquivo,
+                    Tamanho = request.ConteudoArquivo.Length,
+                    Conteudo = request.ConteudoArquivo,
+                    DataCadastro = DateTime.Now
+                },
+                NumeroVersao = arquivo.NumeroVersaoAtual,
+                DataCadastro = DateTime.Now
+            };
+
+            novaVersao.ConteudoArquivo.SetHash();
+
+            return novaVersao;
+        }
+
+        public static AtualizarArquivoResponse ToResponseAtualizar(this Arquivo arquivo)
+        {
+            return new AtualizarArquivoResponse
+            {
+                Id = arquivo.Id,
+                DataAtualizacao = arquivo.DataAtualizacao!.Value,
+                NumeroVersao = arquivo.NumeroVersaoAtual
             };
         }
     }
