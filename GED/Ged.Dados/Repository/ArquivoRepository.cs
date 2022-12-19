@@ -20,5 +20,12 @@ namespace Ged.Dados.Repository
 
             return arquivo;
         }
+
+        public async Task<ConteudoArquivo> GetConteudoArquivoAtual(long id)
+        {
+            Arquivo arquivo = await GetArquivo(id);
+
+            return arquivo.VersaoAtual!.ConteudoArquivo;
+        }
     }
 }
