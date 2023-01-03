@@ -82,7 +82,7 @@ namespace Ged.Api.Features.ArquivoFeature
 
         }
 
-        [HttpGet("{idsArquivos}")]
+        [HttpGet("listar/{idsArquivos}")]
         public async Task<ActionResult> Get(IEnumerable<long> ids)
         {
             try
